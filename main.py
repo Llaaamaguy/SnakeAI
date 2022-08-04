@@ -9,37 +9,26 @@ clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 def main():
     board = Board(16)
     print(board)
-
-    # A sequence to execute right, up, up, left, left, down
-    time.sleep(0.5)
-    board.snake_right()
-    clearConsole()
-    print(board)
-
-    time.sleep(0.5)
-    board.snake_up()
-    clearConsole()
-    print(board)
-
-    time.sleep(0.5)
-    board.snake_up()
-    clearConsole()
-    print(board)
-
-    time.sleep(0.5)
-    board.snake_left()
-    clearConsole()
-    print(board)
-
-    time.sleep(0.5)
-    board.snake_left()
-    clearConsole()
-    print(board)
-
-    time.sleep(0.5)
-    board.snake_down()
-    clearConsole()
-    print(board)
+    gameState = True
+    while gameState:
+        print(f"Move choices: {board.move_choices()}")
+        move = input("Enter a move. Left (l), Right (r), Down (d), or Up (u):  ")
+        match move:
+            case "l":
+                res = board.snake_left()
+            case "r":
+                res = board.snake_right()
+            case "d":
+                res = board.snake_down()
+            case "u":
+                res = board.snake_up()
+            case other:
+                raise ValueError("Incorrect input")
+        clearConsole()
+        print(board)
+        if res == "GameFail":
+            gameState = False
+    print("Game Over")
 
 
 if __name__ == "__main__":
