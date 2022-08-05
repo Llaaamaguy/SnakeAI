@@ -9,6 +9,7 @@ clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 def main():
     board = Board(16)
     print(board)
+    """
     gameState = True
     while gameState:
         print(f"Move choices: {board.move_choices()}")
@@ -28,6 +29,19 @@ def main():
         print(board)
         if res == "GameFail":
             gameState = False
+    print("Game Over")
+    """
+
+    res = True
+    while res:
+        res = board.algorithm_move()
+        time.sleep(0.5)
+        clearConsole()
+        print(board)
+
+        if res == "GameFail":
+            print("GAME FAIL")
+            res = False
     print("Game Over")
 
 

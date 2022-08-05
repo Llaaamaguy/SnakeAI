@@ -10,7 +10,7 @@ class Board:
         self.score = 0
         self.length = 3
         self.size = size
-        self.lastMove = None
+        self.lastMove = "r"
 
         # Generates the empty board
         self.board = np.array([[Cell("Empty") if 0 < i < size - 1 else Cell("Wall") for i in range(size)] if 0 < j < size - 1 else [Cell("Wall") for _ in range(size)] for j in range(size)])
@@ -136,10 +136,10 @@ class Board:
 
     def move_choices(self):
         if self.lastMove:
-            upCell = self.board[self.headPos[0] - 1][self.headPos[1]]
-            downCell = self.board[self.headPos[0] + 1][self.headPos[1]]
-            leftCell = self.board[self.headPos[0]][self.headPos[1]-1]
-            rightCell = self.board[self.headPos[0]][self.headPos[1]+1]
+            upCell = (self.headPos[0] - 1, self.headPos[1])
+            downCell = (self.headPos[0] + 1, self.headPos[1])
+            leftCell = (self.headPos[0], self.headPos[1] - 1)
+            rightCell = (self.headPos[0], self.headPos[1] + 1)
             choices = {"u": upCell, "d": downCell, "l": leftCell, "r": rightCell}
             inverses = {"u": "d", "d": "u", "l": "r", "r": "l"}
             match self.lastMove:
@@ -151,6 +151,33 @@ class Board:
                     del choices[inverses["l"]]
                 case "r":
                     del choices[inverses["r"]]
-
-            return list(choices.keys())
+            toDel = []
+            for mDir, cellPos in choices.items():
+                if self.board[cellPos[0]][cellPos[1]].is_hard():
+                    toDel.append(mDir)
+            for i in toDel:
+                del choices[i]
+            return choices
         return None
+
+    def algorithm_move(self):
+        choices = self.move_choices()
+        if len(choices) < 1:
+            return "GameFail"
+        differences = {}
+        for mDir, cellPos in choices.items():
+            difference = (abs(self.applePos[0]-cellPos[0]))+(abs(self.applePos[1]-cellPos[1]))
+            differences[mDir] = difference
+        moveChoices = [key for key in differences if all(differences[temp] >= differences[key] for temp in differences)]
+        moveChoice = random.choice(moveChoices)
+
+        match moveChoice:
+            case "u":
+                self.snake_up()
+            case "d":
+                self.snake_down()
+            case "l":
+                self.snake_left()
+            case "r":
+                self.snake_right()
+        return True
